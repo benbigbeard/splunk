@@ -1,0 +1,124 @@
+<dashboard>
+  <label>DSA</label>
+  <row>
+    <panel>
+      <title>List of Sourcetypes</title>
+      <table>
+        <search>
+          <query>| tstats count where index=* earliest=@day-30days latest=@day by sourcetype | addcoltotals labelfield=sourcetype label="TOTAL EVENTS &gt;&gt;&gt;&gt;&gt; "</query>
+          <earliest>0</earliest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Number of Events Per Sourcetype</title>
+      <table>
+        <search>
+          <query>| tstats count where index=* earliest=@day-30days latest=@day by sourcetype | addcoltotals labelfield=sourcetype label="TOTAL EVENTS &gt;&gt;&gt;&gt;&gt; "</query>
+          <earliest>0</earliest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Number of Hosts by Sourcetype</title>
+      <table>
+        <search>
+          <query>| tstats dc(host) as hosts WHERE index=* earliest=@day-30days latest=@day by sourcetype</query>
+          <earliest>0</earliest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>How Often Hosts Report</title>
+      <table>
+        <search>
+          <query>| tstats latest(_time) as Latest where index=* index!=itsi* earliest=-48h by host sourcetype index
+| eval current=now()
+| eval Minimum_Age=round(((current-Latest)/60)/60,2)
+| rangemap field=Minimum_Age default=Critical Normal=0-0.5 Elevated=0.5-2 Warning=2-4
+| eval stIDX=tostring(index) + " -- " + tostring(sourcetype)
+| stats values(stIDX) as "Index -- Sourcetype" list(Latest) as "Latest Event" list(Minimum_Age) as Minimum_Age list(range) as Threshold by host
+| convert ctime("Latest Event")
+| eventstats avg(Minimum_Age) as average by host
+| eval host=md5(host)
+| eval average=round(average,2)
+| sort - average
+| rename Minimum_Age as "Hours Since Last Communication" average as "Average Time in Hours Since Last Communication"</query>
+          <earliest>0</earliest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Average Size of Logs</title>
+      <table>
+        <search>
+          <query>index=_internal source=*license_usage.log TERM(type=Usage) earliest=-30d@d
+| fields idx, b, st, h, _time, date_wday
+| eval h=if(len(h)=0 OR isnull(h),'(SQUASHED)',h)
+| bin _time span=1d
+| stats sum(b) AS b, dc(h) AS h by st idx date_wday
+| stats avg(b) as avg_b, avg(h) AS Host_Count_per_Day by idx st
+| eval Avg_MB_per_Day=round(avg_b/1024/1024,2)
+| eval Avg_GB_per_Day=round(avg_b/1024/1024/1024,2)
+| eval Avg_MB_per_Host=round(Avg_MB_per_Day/Host_Count_per_Day,2)
+| eval Host_Count_per_Day=round(Host_Count_per_Day,0)
+| rename st AS Sourcetype
+| table idx, Sourcetype, Avg_MB_per_Day, Avg_GB_per_Day, Host_Count_per_Day, Avg_MB_per_Host
+| sort Sourcetype
+| addcoltotals label="Total average amount" labelfield=Sourcetype</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
