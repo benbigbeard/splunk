@@ -1,0 +1,162 @@
+<dashboard>
+  <label>Metrics commands</label>
+  <row>
+    <panel>
+      <title>List all</title>
+      <table>
+        <search>
+          <query>| mcatalog values(metric_name) WHERE index=*
+| appendcols 
+    [| makeresults 
+    | eval command="| mcatalog values(metric_name) WHERE index=*"
+    | eval Description="To list all metric names in all metrics indexes:"]</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>List all Dimensions</title>
+      <table>
+        <search>
+          <query>| mcatalog values(_dims) WHERE index=*
+| appendcols 
+    [| makeresults 
+    | eval command="| mcatalog values(_dims) WHERE index=*"
+    | eval Description="To list all dimensions in all metrics indexes:"]</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>List metric names over 10 secs</title>
+      <table>
+        <search>
+          <query>| mstats count where metric_name=* span=10s BY metric_name
+| appendcols 
+    [| makeresults 
+    | eval command="| mstats count where metric_name=* span=10s BY metric_name"
+    | eval Description="To list counts of metric names over 10-second intervals:"]</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Count of dimensions</title>
+      <table>
+        <search>
+          <query>| mstats count where index=metrics metric_name=*
+| appendcols 
+    [| makeresults 
+    | eval command="| mstats count where index=metrics metric_name=aws.ec2.CPUUtilization"
+    | eval Description="To perform a simple count of a dimension:"]</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Count average value of measurements for every 30 secs</title>
+      <table>
+        <search>
+          <query>| mstats avg(_value) WHERE index=metrics AND metric_name=* span=30s
+| appendcols 
+    [| makeresults 
+    | eval command="| mstats avg(_value) WHERE index=mymetricdata AND metric_name=aws.ec2.CPUUtilization span=30s"
+    | eval Description="To calculate an average value of measurements for every 30-second interval:"]
+| head 5</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Sample chart</title>
+      <chart>
+        <search>
+          <query>| mstats avg(_value) prestats=t WHERE index=metrics AND metric_name="cpu.*" span=1m by metric_name
+| timechart avg(_value) as "Avg" span=1m by metric_name</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>This search shows an example of using an EVAL statement:</title>
+      <event>
+        <search>
+          <query>| mstats avg(_value) as "Avg" WHERE metric_name="memory.free.value" span=5s 
+| eval mem_gb = Avg / 1024 / 1024 / 1024 
+| timechart max("mem_gb") span=5s</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="list.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </event>
+    </panel>
+  </row>
+</dashboard>
