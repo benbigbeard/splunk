@@ -1,71 +1,29 @@
-<dashboard>
+<form theme="dark">
   <label>DSA</label>
+  <fieldset submitButton="false"></fieldset>
   <row>
     <panel>
-      <title>List of Sourcetypes</title>
-      <table>
-        <search>
-          <query>| tstats count where index=* earliest=@day-30days latest=@day by sourcetype | addcoltotals labelfield=sourcetype label="TOTAL EVENTS &gt;&gt;&gt;&gt;&gt; "</query>
-          <earliest>0</earliest>
-          <sampleRatio>1</sampleRatio>
-        </search>
-        <option name="count">100</option>
-        <option name="dataOverlayMode">none</option>
-        <option name="drilldown">none</option>
-        <option name="percentagesRow">false</option>
-        <option name="rowNumbers">false</option>
-        <option name="totalsRow">false</option>
-        <option name="wrap">true</option>
-      </table>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <title>Number of Events Per Sourcetype</title>
-      <table>
-        <search>
-          <query>| tstats count where index=* earliest=@day-30days latest=@day by sourcetype | addcoltotals labelfield=sourcetype label="TOTAL EVENTS &gt;&gt;&gt;&gt;&gt; "</query>
-          <earliest>0</earliest>
-          <sampleRatio>1</sampleRatio>
-        </search>
-        <option name="count">100</option>
-        <option name="dataOverlayMode">none</option>
-        <option name="drilldown">none</option>
-        <option name="percentagesRow">false</option>
-        <option name="rowNumbers">false</option>
-        <option name="totalsRow">false</option>
-        <option name="wrap">true</option>
-      </table>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <title>Number of Hosts by Sourcetype</title>
-      <table>
-        <search>
-          <query>| tstats dc(host) as hosts WHERE index=* earliest=@day-30days latest=@day by sourcetype</query>
-          <earliest>0</earliest>
-          <sampleRatio>1</sampleRatio>
-        </search>
-        <option name="count">100</option>
-        <option name="dataOverlayMode">none</option>
-        <option name="drilldown">none</option>
-        <option name="percentagesRow">false</option>
-        <option name="rowNumbers">false</option>
-        <option name="totalsRow">false</option>
-        <option name="wrap">true</option>
-      </table>
+      <html>
+        <Body>
+          <h1>
+            <br/>
+            <center>Health</center>
+            <br/>
+          </h1>
+        </Body>
+      </html>
     </panel>
   </row>
   <row>
     <panel>
       <title>How Often Hosts Report</title>
       <table>
+        <title>Last 30 Days</title>
         <search>
           <query>| tstats latest(_time) as Latest where index=* index!=itsi* earliest=-48h by host sourcetype index
 | eval current=now()
 | eval Minimum_Age=round(((current-Latest)/60)/60,2)
-| rangemap field=Minimum_Age default=Critical Normal=0-0.5 Elevated=0.5-2 Warning=2-4
+| rangemap field=Minimum_Age default="" Normal=0.00-0.5 Elevated=0.5-2.0 Warning=2.0-4.0 Critical=4.0-10000 exception=-1000000-0
 | eval stIDX=tostring(index) + " -- " + tostring(sourcetype)
 | stats values(stIDX) as "Index -- Sourcetype" list(Latest) as "Latest Event" list(Minimum_Age) as Minimum_Age list(range) as Threshold by host
 | convert ctime("Latest Event")
@@ -73,39 +31,8 @@
 | eval host=md5(host)
 | eval average=round(average,2)
 | sort - average
-| rename Minimum_Age as "Hours Since Last Communication" average as "Average Time in Hours Since Last Communication"</query>
-          <earliest>0</earliest>
-          <sampleRatio>1</sampleRatio>
-        </search>
-        <option name="count">100</option>
-        <option name="dataOverlayMode">none</option>
-        <option name="drilldown">none</option>
-        <option name="percentagesRow">false</option>
-        <option name="rowNumbers">false</option>
-        <option name="totalsRow">false</option>
-        <option name="wrap">true</option>
-      </table>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <title>Average Size of Logs</title>
-      <table>
-        <search>
-          <query>index=_internal source=*license_usage.log TERM(type=Usage) earliest=-30d@d
-| fields idx, b, st, h, _time, date_wday
-| eval h=if(len(h)=0 OR isnull(h),'(SQUASHED)',h)
-| bin _time span=1d
-| stats sum(b) AS b, dc(h) AS h by st idx date_wday
-| stats avg(b) as avg_b, avg(h) AS Host_Count_per_Day by idx st
-| eval Avg_MB_per_Day=round(avg_b/1024/1024,2)
-| eval Avg_GB_per_Day=round(avg_b/1024/1024/1024,2)
-| eval Avg_MB_per_Host=round(Avg_MB_per_Day/Host_Count_per_Day,2)
-| eval Host_Count_per_Day=round(Host_Count_per_Day,0)
-| rename st AS Sourcetype
-| table idx, Sourcetype, Avg_MB_per_Day, Avg_GB_per_Day, Host_Count_per_Day, Avg_MB_per_Host
-| sort Sourcetype
-| addcoltotals label="Total average amount" labelfield=Sourcetype</query>
+| rename Minimum_Age as "Hours Since Last Communication" average as "Average Time in Hours Since Last Communication"
+| search * Threshold!= exception</query>
           <earliest>0</earliest>
           <latest></latest>
           <sampleRatio>1</sampleRatio>
@@ -121,4 +48,214 @@
       </table>
     </panel>
   </row>
-</dashboard>
+  <row>
+    <panel>
+      <title>Data With Future Timestamps</title>
+      <table>
+        <search>
+          <query>| tstats count WHERE index=* earliest=+30min@m GROUPBY sourcetype index source host | join type=left sourcetype [|metadata type=sourcetypes index=* | convert ctime(*Time)] | stats values(host) AS Hosts values(index) AS Index values(sourcetype) AS Sourcetype values(lastTime) AS "Furthest Out Event"</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <body>
+          <h1>
+            <br/>
+            <center>Usage</center>
+            <br/>
+          </h1>
+        </body>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Total number of users</title>
+        <search>
+          <query>| rest splunk_server=local /services/authentication/users | stats count</query>
+        </search>
+        <option name="drilldown">all</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Total privileged users</title>
+        <search>
+          <query>| rest splunk_server=local /services/authentication/users | search roles=admin | stats count</query>
+        </search>
+        <option name="drilldown">all</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Users that can delete</title>
+        <search>
+          <query>| rest splunk_server=local /services/authentication/users | search capabilities="delete_by_keyword" | stats count | rangemap field=count high=1-100 default=low</query>
+        </search>
+        <option name="drilldown">all</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>User executed searches (last 24 hours)</title>
+      <table>
+        <title>Default to Last 3 (Drill Down For More)</title>
+        <search>
+          <query>index=_audit action=search (id=* OR search_id=*) user="*" | eval search_id=if(isnull(search_id), id, search_id) | replace '*' with * in search_id | search search_id!=rt_* search_id!=searchparsetmp* | rex "search='(?&lt;search&gt;.*?)', autojoin" | rex "savedsearch_name=\"(?&lt;savedsearch_name&gt;.*?)\"\]\[" | eval search=case(isnotnull(search),search,isnull(search) AND savedsearch_name!="","Scheduled search name : ".savedsearch_name,isnull(search) AND savedsearch_name=="","SID : ".search_id) | eval user = if(user="n/a", "nobody", user) | stats min(_time) as _time last(user) as user last(search) as search by search_id | search search_id=* search!=typeahead* search!="|history*" search!=*_internal* search!=*_audit* | search search_id!=subsearch_* | stats count values(user) as User(s) by search | sort 50 - count | fields User(s) search 
+| head 3</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>App dashboard views over time by app (Usage/Popularity)</title>
+      <input type="time" token="field1">
+        <label></label>
+        <default>
+          <earliest>-10d@d</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <input type="dropdown" token="exclude_search_app" searchWhenChanged="true">
+        <label>Exclude search app</label>
+        <choice value="app!=&quot;search&quot;">yes</choice>
+        <choice value="">no</choice>
+        <default>app!="search"</default>
+      </input>
+      <chart>
+        <search>
+          <query>index="_internal" sourcetype=splunk_web_access GET app | rex "GET /[^/]+/app/(?&lt;app&gt;[^/ ?]+)/" | search $exclude_search_app$ app=* AND user=* AND user!="-" | timechart limit=100 count by app</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <body>
+          <h1>
+            <br/>
+            <center>Data</center>
+            <br/>
+          </h1>
+        </body>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>List of Sourcetypes by Hosts</title>
+      <table>
+        <title>Last 30 Days</title>
+        <search>
+          <query>| tstats count where index=*  earliest=@day-30days latest=@day by sourcetype 
+| appendcols 
+    [| tstats dc(host) as hosts WHERE index=* earliest=@day-30days latest=@day by sourcetype]|
+addcoltotals labelfield=sourcetype label="TOTAL &gt;&gt;&gt;&gt;&gt; "
+| rename count as "Number of Events", hosts as "No of Hosts Reporting"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Average Size of Logs</title>
+      <table>
+        <title>Last 30 Days</title>
+        <search>
+          <query>index=_internal source=*license_usage.log TERM(type=Usage) earliest=-30d@d
+| fields idx, b, st, h, _time, date_wday
+| eval h=if(len(h)=0 OR isnull(h),'(SQUASHED)',h)
+| bin _time span=1d
+| stats sum(b) AS b, dc(h) AS h by st idx date_wday
+| stats avg(b) as avg_b, avg(h) AS Host_Count_per_Day by idx st
+| eval Avg_MB_per_Day=round(avg_b/1024/1024,2)
+| eval Avg_GB_per_Day=round(avg_b/1024/1024/1024,2)
+| eval Avg_MB_per_Host=round(Avg_MB_per_Day/Host_Count_per_Day,2)
+| eval "Host Count per Day"=round(Host_Count_per_Day,0)
+| rename st AS Sourcetype
+| table idx, Sourcetype, Avg_MB_per_Day, Avg_GB_per_Day, Host_Count_per_Day, Avg_MB_per_Host
+| sort - Avg_MB_per_Host
+| addcoltotals label="Total average amount" labelfield=Sourcetype
+| rename Avg_MB_per_Day AS "Avg MB Per Day", Avg_GB_per_Day AS "Avg Gb Per Day", Host_Count_per_Day AS "Host Count Per Day", Avg_MB_per_Host AS "Avg MB Per Host"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Index Size</title>
+      <table>
+        <search>
+          <query>|dbinspect index=* | eval state=if(state=="warm" OR state=="hot","hot/warm",state) | stats sum(sizeOnDiskMB) AS size_mb sum(eventCount) AS event_count by index state | convert ctime(*bucket) | eval range=tostring(strptime(latest_bucket, "%m/%d/%Y %H:%M:%S") - strptime(earliest_bucket, "%m/%d/%Y %H:%M:%S"),"duration") | eval "Total Size (GB)"=tostring(size_mb/1024,"commas") | eval "Event Count"=tostring(event_count,"commas") | join index [|rest splunk_server_group=dmc_group_indexer /services/data/indexes | rename title AS index | eval "Retention Days"=frozenTimePeriodInSecs/60/60/24 | fields index "Retention Days"] | rename index AS Index  | table Index "Retention Days" "Event Count" "Total Size (GB)" | sort - "Total Size (GB)"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>
