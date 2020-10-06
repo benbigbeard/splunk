@@ -1,0 +1,49 @@
+<dashboard theme="dark">
+  <label>Audit</label>
+  <row>
+    <panel>
+      <title>Login Attempts</title>
+      <table>
+        <title>Last 24 Hours</title>
+        <search>
+          <query>index=_audit tag=authentication | stats count by _time, user, info | sort - info
+| rename _time AS Time, user AS Username, info AS State
+| eval Time=strftime(Time,"%m/%d/%y %H:%M:%S")
+| fields - count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>User Activity - Searches</title>
+      <table>
+        <title>Last 24 Hours</title>
+        <search>
+          <query>index=_audit splunk_server=* action=search (id=* OR search_id=*) | eval search_id = if(isnull(search_id), id, search_id) | replace '*' with * in search_id | rex "search='search\s(?&lt;search&gt;.*?)',\sautojoin"| search search_id!=scheduler_* | convert num(total_run_time) | eval user = if(user="n/a", null(), user) | stats min(_time) as _time first(user) as user max(total_run_time) as total_run_time first(search) as search by search_id | search search!=*_internal* search!=*_audit* | chart sum(total_run_time) as "Total search time" count as "Search count" max(_time) as "Last use" by user | fieldformat "Last use" = strftime('Last use', "%F %T.%Q")</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>User Modification</title>
+      <table>
+        <title>Last 24 Hours</title>
+        <search>
+          <query>index=_audit sourcetype=audittrail action=edit_user | eval Date=strftime(_time, "%Y/%m/%d") |where user!=object| stats count by user, info, object, Date | rename user as "Authenticated User" | rename info as "Success Status" | rename object as "Modified Account" | sort - count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
