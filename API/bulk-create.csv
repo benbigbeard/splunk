@@ -1,67 +1,67 @@
-﻿serial,team,username,password,role,app,exclude
-1,wright,wright-1,Splunk.5,wright,TRUE,
-2,wright,wright-2,Splunk.5,wright,,
-3,wright,wright-3,Splunk.5,wright,,
-4,wright,wright-4,Splunk.5,wright,,
-5,wright,wright-5,Splunk.5,wright,,
-6,wright,wright-6,Splunk.5,wright,,
-7,bleriot,bleriot-1,Splunk.5,bleriot,TRUE,x
-8,bleriot,bleriot-2,Splunk.5,bleriot,,x
-9,bleriot,bleriot-3,Splunk.5,bleriot,,x
-10,bleriot,bleriot-4,Splunk.5,bleriot,,x
-11,bleriot,bleriot-5,Splunk.5,bleriot,,x
-12,bleriot,bleriot-6,Splunk.5,bleriot,,x
-13,spitfire,spitfire-1,Splunk.5,spitfire,TRUE,x
-14,spitfire,spitfire-2,Splunk.5,spitfire,,x
-15,spitfire,spitfire-3,Splunk.5,spitfire,,x
-16,spitfire,spitfire-4,Splunk.5,spitfire,,x
-17,spitfire,spitfire-5,Splunk.5,spitfire,,x
-18,spitfire,spitfire-6,Splunk.5,spitfire,,x
-19,cirrus,cirrus-1,Splunk.5,cirrus,TRUE,x
-20,cirrus,cirrus-2,Splunk.5,cirrus,,x
-21,cirrus,cirrus-3,Splunk.5,cirrus,,x
-22,cirrus,cirrus-4,Splunk.5,cirrus,,x
-23,cirrus,cirrus-5,Splunk.5,cirrus,,x
-24,cirrus,cirrus-6,Splunk.5,cirrus,,x
-25,lancaster,lancaster-1,Splunk.5,lancaster,TRUE,x
-26,lancaster,lancaster-2,Splunk.5,lancaster,,x
-27,lancaster,lancaster-3,Splunk.5,lancaster,,x
-28,lancaster,lancaster-4,Splunk.5,lancaster,,x
-29,lancaster,lancaster-5,Splunk.5,lancaster,,x
-30,lancaster,lancaster-6,Splunk.5,lancaster,,x
-31,hurricane,hurricane-1,Splunk.5,hurricane,TRUE,x
-32,hurricane,hurricane-2,Splunk.5,hurricane,,x
-33,hurricane,hurricane-3,Splunk.5,hurricane,,x
-34,hurricane,hurricane-4,Splunk.5,hurricane,,x
-35,hurricane,hurricane-5,Splunk.5,hurricane,,x
-36,hurricane,hurricane-6,Splunk.5,hurricane,,x
-37,learjet,learjet-1,Splunk.5,learjet,TRUE,x
-38,learjet,learjet-2,Splunk.5,learjet,,x
-39,learjet,learjet-3,Splunk.5,learjet,,x
-40,learjet,learjet-4,Splunk.5,learjet,,x
-41,learjet,learjet-5,Splunk.5,learjet,,x
-42,learjet,learjet-6,Splunk.5,learjet,,x
-43,douglas,douglas-1,Splunk.5,douglas,TRUE,x
-44,douglas,douglas-2,Splunk.5,douglas,,x
-45,douglas,douglas-3,Splunk.5,douglas,,x
-46,douglas,douglas-4,Splunk.5,douglas,,x
-47,douglas,douglas-5,Splunk.5,douglas,,x
-48,douglas,douglas-6,Splunk.5,douglas,,x
-49,cessna,cessna-1,Splunk.5,cessna,TRUE,x
-50,cessna,cessna-2,Splunk.5,cessna,,x
-51,cessna,cessna-3,Splunk.5,cessna,,x
-52,cessna,cessna-4,Splunk.5,cessna,,x
-53,cessna,cessna-5,Splunk.5,cessna,,x
-54,cessna,cessna-6,Splunk.5,cessna,,x
-55,rutan,rutan-1,Splunk.5,rutan,TRUE,x
-56,rutan,rutan-2,Splunk.5,rutan,,x
-57,rutan,rutan-3,Splunk.5,rutan,,x
-58,rutan,rutan-4,Splunk.5,rutan,,x
-59,rutan,rutan-5,Splunk.5,rutan,,x
-60,rutan,rutan-6,Splunk.5,rutan,,x
-61,piper,piper-1,Splunk.5,piper,TRUE,x
-62,piper,piper-2,Splunk.5,piper,,x
-63,piper,piper-3,Splunk.5,piper,,x
-64,piper,piper-4,Splunk.5,piper,,x
-65,piper,piper-5,Splunk.5,piper,,x
-66,piper,piper-6,Splunk.5,piper,,x
+serial,team,username,password,role,app,exclude
+1,wright,wright-1, ,wright,TRUE,
+2,wright,wright-2, ,wright,,
+3,wright,wright-3, ,wright,,
+4,wright,wright-4, ,wright,,
+5,wright,wright-5, ,wright,,
+6,wright,wright-6, ,wright,,
+7,bleriot,bleriot-1, ,bleriot,TRUE,x
+8,bleriot,bleriot-2, ,bleriot,,x
+9,bleriot,bleriot-3, ,bleriot,,x
+10,bleriot,bleriot-4, ,bleriot,,x
+11,bleriot,bleriot-5, ,bleriot,,x
+12,bleriot,bleriot-6, ,bleriot,,x
+13,spitfire,spitfire-1, ,spitfire,TRUE,x
+14,spitfire,spitfire-2, ,spitfire,,x
+15,spitfire,spitfire-3, ,spitfire,,x
+16,spitfire,spitfire-4, ,spitfire,,x
+17,spitfire,spitfire-5, ,spitfire,,x
+18,spitfire,spitfire-6, ,spitfire,,x
+19,cirrus,cirrus-1, ,cirrus,TRUE,x
+20,cirrus,cirrus-2, ,cirrus,,x
+21,cirrus,cirrus-3, ,cirrus,,x
+22,cirrus,cirrus-4, ,cirrus,,x
+23,cirrus,cirrus-5, ,cirrus,,x
+24,cirrus,cirrus-6, ,cirrus,,x
+25,lancaster,lancaster-1, ,lancaster,TRUE,x
+26,lancaster,lancaster-2, ,lancaster,,x
+27,lancaster,lancaster-3, ,lancaster,,x
+28,lancaster,lancaster-4, ,lancaster,,x
+29,lancaster,lancaster-5, ,lancaster,,x
+30,lancaster,lancaster-6, ,lancaster,,x
+31,hurricane,hurricane-1, ,hurricane,TRUE,x
+32,hurricane,hurricane-2, ,hurricane,,x
+33,hurricane,hurricane-3, ,hurricane,,x
+34,hurricane,hurricane-4, ,hurricane,,x
+35,hurricane,hurricane-5, ,hurricane,,x
+36,hurricane,hurricane-6, ,hurricane,,x
+37,learjet,learjet-1, ,learjet,TRUE,x
+38,learjet,learjet-2, ,learjet,,x
+39,learjet,learjet-3, ,learjet,,x
+40,learjet,learjet-4, ,learjet,,x
+41,learjet,learjet-5, ,learjet,,x
+42,learjet,learjet-6, ,learjet,,x
+43,douglas,douglas-1, ,douglas,TRUE,x
+44,douglas,douglas-2, ,douglas,,x
+45,douglas,douglas-3, ,douglas,,x
+46,douglas,douglas-4, ,douglas,,x
+47,douglas,douglas-5, ,douglas,,x
+48,douglas,douglas-6, ,douglas,,x
+49,cessna,cessna-1, ,cessna,TRUE,x
+50,cessna,cessna-2, ,cessna,,x
+51,cessna,cessna-3, ,cessna,,x
+52,cessna,cessna-4, ,cessna,,x
+53,cessna,cessna-5, ,cessna,,x
+54,cessna,cessna-6, ,cessna,,x
+55,rutan,rutan-1, ,rutan,TRUE,x
+56,rutan,rutan-2, ,rutan,,x
+57,rutan,rutan-3, ,rutan,,x
+58,rutan,rutan-4, ,rutan,,x
+59,rutan,rutan-5, ,rutan,,x
+60,rutan,rutan-6, ,rutan,,x
+61,piper,piper-1, ,piper,TRUE,x
+62,piper,piper-2, ,piper,,x
+63,piper,piper-3, ,piper,,x
+64,piper,piper-4, ,piper,,x
+65,piper,piper-5, ,piper,,x
+66,piper,piper-6, ,piper,,x
