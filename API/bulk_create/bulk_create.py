@@ -12,6 +12,7 @@ import requests
 
 user = '<USER>'
 password = '<PASSWORD>'
+address = 'https://localhost:8089/services/authorization/roles'
 
 # open file in read mode
 with open('/Users/blovley/Desktop/Customers/Babcock/hackathon/Admin/hackathon.csv', 'r') as read_obj:
@@ -20,11 +21,11 @@ with open('/Users/blovley/Desktop/Customers/Babcock/hackathon/Admin/hackathon.cs
     	if not row['exclude']:
     		# create roles
     		data = {'name': row['role'], 'imported_roles': 'user'}
-    		response = requests.post('https://localhost:8089/services/authorization/roles', data=data, verify=False, auth=(user, password))
+    		response = requests.post(address, data=data, verify=False, auth=(user, password))
 	    	# create app - https://docs.splunk.com/Documentation/Splunk/6.1.3/RESTAPI/RESTapps#POST_apps.2Flocal
 	    	if row['app'] == "TRUE":
 	    		data = {'name': row['team'], 'label': row['team'], 'template': 'sample_app', 'visible': '1'}
-	    		response = requests.post('https://localhost:8089/services/apps/local', data=data, verify=False, auth=(user, password))
+	    		response = requests.post(address, data=data, verify=False, auth=(user, password))
 	    	# create users - assigned to apps (https://docs.splunk.com/Documentation/Splunk/7.2.4/RESTREF/RESTaccess#authentication.2Fusers)
 	    	data = {'name': row['username'], 'password': row['password'], 'roles': row['role'], 'defaultApp': row['team']}
-	    	response = requests.post('https://localhost:8089/services/authentication/users', data=data, verify=False, auth=(user, password))
+	    	response = requests.post(address, data=data, verify=False, auth=(user, password))
