@@ -13,9 +13,10 @@ import requests
 user = '<USER>'
 password = '<PASSWORD>'
 address = 'https://localhost:8089/services/authorization/roles'
+ulist = '/Users/blovley/Desktop/Customers/Babcock/hackathon/Admin/hackathon.csv'
 
 # open file in read mode
-with open('/Users/blovley/Desktop/Customers/Babcock/hackathon/Admin/hackathon.csv', 'r') as read_obj:
+with open(ulist, 'r') as read_obj:
     csv_dict_reader = DictReader(read_obj)
     for row in csv_dict_reader:
     	if not row['exclude']:
