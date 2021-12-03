@@ -10,10 +10,17 @@ import requests
 
 # curl to requests - https://curl.trillworks.com/
 
+"""
 user = '<USER>'
 password = '<PASSWORD>'
 address = 'https://localhost:8089/services/authorization/roles'
 ulist = '/Users/blovley/Desktop/Customers/Babcock/hackathon/Admin/hackathon.csv'
+"""
+user = ''
+password = ''
+address = ''
+ulist = ''
+
 
 # open file in read mode
 with open(ulist, 'r') as read_obj:
