@@ -17,23 +17,12 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # command line argument config
 parser = argparse.ArgumentParser(description='Connfig for the demo events')
-parser.add_argument("-i", default="temp_charger", help="index")
-parser.add_argument("-m", default="charger", help="host")
-parser.add_argument("-n", default="charger_1", help="Machine Name")
-parser.add_argument("-d", default="charger", help="Domain")
-parser.add_argument("-f", default="demo3", help="File")
 parser.add_argument("-t", default="false", help="test botp event")
 parser.add_argument("-e", default="false", help="test evtx event")
 args = parser.parse_args()
 
 # global variables
 global status
-global index
-global host
-global machinename
-global domains
-global file
-global OS
 global counter
 
 # read the json templates
