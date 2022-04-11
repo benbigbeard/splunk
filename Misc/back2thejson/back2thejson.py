@@ -14,11 +14,12 @@ import calendar
 from datetime import datetime, timedelta
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from argparse import RawTextHelpFormatter
 
 # command line argument config
-parser = argparse.ArgumentParser(description='Connfig for the demo events')
-parser.add_argument("-t", default="false", help="test botp event")
-parser.add_argument("-e", default="false", help="test evtx event")
+parser = argparse.ArgumentParser(description='The following arrguments can be set to true to iniclude the corresponding data: \n\n'+'-b = botp ev charging stationn\n'+'-e = evtx security', formatter_class=RawTextHelpFormatter)
+parser.add_argument("-b", default="false", help="botp event")
+parser.add_argument("-e", default="false", help="evtx security event")
 args = parser.parse_args()
 
 # global variables
@@ -30,7 +31,7 @@ filepath = "/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/"
 
 # read the json templates
 # 1. botp charger
-if args.t =="true":
+if args.b =="true":
 	with open(filepath+'botp_charger.json') as f:
 		json_botp_temp = json.load(f)
 		y = ['test']
