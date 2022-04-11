@@ -34,9 +34,8 @@ filepath = "/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/"
 if args.b =="true":
 	with open(filepath+'botp_charger.json') as f:
 		json_botp_temp = json.loads(f)
-		y = ['test']
 		for obj in json_botp_temp:
-			if obj['host'] in ["99999999","00000000"]:
+			if obj['host'] in ["99999999"]:
 				obj['host'] = "TEST"
 		json_botp_temp = json.dumps(json_botp_temp)
 		print("variable json_botp_temp: "+json_botp_temp)
