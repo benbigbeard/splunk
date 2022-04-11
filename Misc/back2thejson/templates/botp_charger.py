@@ -1,4 +1,6 @@
+import json
 
+jsonDict = {
     "host":host,
     "index":index,
     "sourcetype":"json_charger",
@@ -22,3 +24,4 @@
       "type": "interactive",
       "readingTime": date_time,
       "counter": counter
+}
