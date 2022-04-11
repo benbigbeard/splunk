@@ -11,12 +11,14 @@ from datetime import datetime, timedelta
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# some_file.py
-import sys
-# insert at 1, 0 is the script path (or '' in REPL)
-sys.path.insert(1, '/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/')
 
+import sys
+sys.path.insert(0, '/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates')
 from botp_charger import jsonDict
+
+json = json.load(jsonDict)
+
+print = json
 
 # command line argument config
 parser = argparse.ArgumentParser(description='Connfig for the demo events')
