@@ -31,9 +31,9 @@ global OS
 global counter
 global d
 
+# read the json templates
 with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/botp_charger.json') as f:
     json_botp_temp = json.load(f)
-    #print(d)
 
 # convert to strings  for json
 index = str(args.i)
@@ -69,27 +69,34 @@ def mainScript(iterationnumber):
 	# how much time (60 is one min)
 	epoch_min = counter*60
 
+	# format the time stamp variable
 	d=datetime(year, month, day, hour, minute)
 	time=(calendar.timegm(d.timetuple()))
 	time2=time-epoch_min
 	date_time = str(datetime.fromtimestamp( time2 ))
 
+	# variable options
 	oslist = ["Windows 10 Enterprise 2004"]
 	OS = str(random.choice(oslist))
 
 	statuslist = ["true", "false"]
+	# weights  for changing the frequency
 	status = str(random.choices(statuslist, weights=(90,10))).strip('[]\'')
 
+	# TEMP for testing
 	print(json_botp_temp)
 
 """
+	# posting data to splunk
 	r = requests.post(url, headers=authHeader, json=jsonDict, verify=False)
 	print (r.text)
 """
 
+# main function
 def main(unused_command_line_args):
     for i in range(1):
         mainScript(i)
+        # sleep for real time data
         #time.sleep(60)
     return 0
 
