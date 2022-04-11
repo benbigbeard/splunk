@@ -25,10 +25,13 @@ args = parser.parse_args()
 global status
 global counter
 
+#variable for filepath of the template files
+filepath = "/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/"
+
 # read the json templates
 # 1. botp charger
 if args.t =="true":
-	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/botp_charger.json') as f:
+	with open(filepath+'botp_charger.json') as f:
 		json_botp_temp = json.load(f)
 		y = ['test']
 		for obj in json_botp_temp:
@@ -38,7 +41,7 @@ if args.t =="true":
 
 # 2. EVTX Security
 if args.e =="true":
-	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/evtx_security.json') as f:
+	with open(filepath+'evtx_security.json') as f:
 		evtx_security = json.load(f)
 		print("variable evtx_security")
 
