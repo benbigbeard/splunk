@@ -5,11 +5,12 @@ import sys
 import requests
 import json
 import time
-from datetime import datetime, timedelta
 import random
+import calendar
+from datetime import datetime, timedelta
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-import calendar
+
 
 parser = argparse.ArgumentParser(description='Connfig for the demo events')
 #parser.add_argument("-u", default="john.doe", help="Username")
