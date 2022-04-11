@@ -36,7 +36,8 @@ if args.b =="true":
 		json_botp_temp = json.load(f)
 		y = ['test']
 		for obj in json_botp_temp:
-			obj['host'] = obj['host'].replace('99999999', obj['TEST'])
+			if obj['host']=='99999999':
+				obj['host'] = obj['host'].replace('99999999', obj['TEST'])
 		json_botp_temp = json.dumps(json_botp_temp)
 		print("variable json_botp_temp: "+json_botp_temp)
 
