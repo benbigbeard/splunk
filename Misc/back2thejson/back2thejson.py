@@ -11,17 +11,16 @@ from datetime import datetime, timedelta
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
+# command line argument config
 parser = argparse.ArgumentParser(description='Connfig for the demo events')
-#parser.add_argument("-u", default="john.doe", help="Username")
 parser.add_argument("-i", default="temp_charger", help="index")
 parser.add_argument("-m", default="charger", help="host")
 parser.add_argument("-n", default="charger_1", help="Machine Name")
 parser.add_argument("-d", default="charger", help="Domain")
 parser.add_argument("-f", default="demo3", help="File")
-
 args = parser.parse_args()
 
+# global variables
 global status
 global index
 global host
@@ -31,30 +30,38 @@ global file
 global OS
 global counter
 
-#user = str(args.u)
+# convert to strings  for json
 index = str(args.i)
 host = str(args.m)
 machinename = str(args.n)
 domain = str(args.d)
 file = str(args.f)
 
+# counter to add 1 for each entry
 counter=0
 
+# main function
 def mainScript(iterationnumber):
 
+	# keep for counter
 	global counter
 
+	# add one
 	counter+=1
 
+	# Splunk URL
 	url='http://<URL>:8088/services/collector/event?auto_extract_timestamp=true'
+	# auth header (token)
 	authHeader = {'Authorization': 'Splunk <token>'}
 
+	# data/time to start filling from
 	year = 2022
 	month = 4
 	day = 11
 	hour = 15
 	minute = 12
 
+	# how much time (60 is one min)
 	epoch_min = counter*60
 
 	d=datetime(year, month, day, hour, minute)
@@ -68,7 +75,9 @@ def mainScript(iterationnumber):
 	statuslist = ["true", "false"]
 	status = str(random.choices(statuslist, weights=(90,10))).strip('[]\'')
 
+	jsonDict={SOMETHING}
 
+"""
 	jsonDict = {
 	    "host":host,
 	    "index":index,
@@ -101,9 +110,10 @@ def mainScript(iterationnumber):
 
 	r = requests.post(url, headers=authHeader, json=jsonDict, verify=False)
 	print (r.text)
+"""
 
 def main(unused_command_line_args):
-    for i in range(43800):
+    for i in range(1):
         mainScript(i)
         #time.sleep(60)
     return 0
