@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+"""
+users need ot change line 39 location, line 63 url, line 64  token, unquote 94-96 for sending data
+"""
+
 import argparse
 import sys
 import requests
@@ -18,6 +22,7 @@ parser.add_argument("-m", default="charger", help="host")
 parser.add_argument("-n", default="charger_1", help="Machine Name")
 parser.add_argument("-d", default="charger", help="Domain")
 parser.add_argument("-f", default="demo3", help="File")
+parser.add_argument("-t", default="false", help="botp event")
 args = parser.parse_args()
 
 # global variables
@@ -32,8 +37,10 @@ global counter
 global d
 
 # read the json templates
-with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/botp_charger.json') as f:
-    json_botp_temp = json.load(f)
+if args.t =="true":
+	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/botp_charger.json') as f:
+	    json_botp_temp = json.load(f)
+	    print("variable json_botp_temp")
 
 # convert to strings  for json
 index = str(args.i)
@@ -82,9 +89,6 @@ def mainScript(iterationnumber):
 	statuslist = ["true", "false"]
 	# weights  for changing the frequency
 	status = str(random.choices(statuslist, weights=(90,10))).strip('[]\'')
-
-	# TEMP for testing
-	print(json_botp_temp)
 
 """
 	# posting data to splunk
