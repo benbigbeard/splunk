@@ -35,16 +35,15 @@ global domains
 global file
 global OS
 global counter
-global d
 
 # read the json templates
-# botp
+# 1. botp charger
 if args.t =="true":
 	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/botp_charger.json') as f:
 	    json_botp_temp = json.load(f)
 	    print("variable json_botp_temp")
 
-# EVTX
+# 2. EVTX Security
 if args.e =="true":
 	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/evtx_security.json') as f:
 	    evtx_security = json.load(f)
