@@ -22,7 +22,8 @@ parser.add_argument("-m", default="charger", help="host")
 parser.add_argument("-n", default="charger_1", help="Machine Name")
 parser.add_argument("-d", default="charger", help="Domain")
 parser.add_argument("-f", default="demo3", help="File")
-parser.add_argument("-t", default="false", help="botp event")
+parser.add_argument("-t", default="false", help="test botp event")
+parser.add_argument("-e", default="false", help="test evtx event")
 args = parser.parse_args()
 
 # global variables
@@ -37,10 +38,17 @@ global counter
 global d
 
 # read the json templates
+# botp
 if args.t =="true":
 	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/botp_charger.json') as f:
 	    json_botp_temp = json.load(f)
 	    print("variable json_botp_temp")
+
+# EVTX
+if args.e =="true":
+	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/evtx_security.json') as f:
+	    evtx_security = json.load(f)
+	    print("variable evtx_security")
 
 # convert to strings  for json
 index = str(args.i)
