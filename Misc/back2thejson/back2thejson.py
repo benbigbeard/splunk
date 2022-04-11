@@ -11,15 +11,6 @@ from datetime import datetime, timedelta
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-import sys
-sys.path.insert(0, '/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates')
-from botp_charger import jsonDict
-
-json = json.load(jsonDict)
-
-print = json
-
 # command line argument config
 parser = argparse.ArgumentParser(description='Connfig for the demo events')
 parser.add_argument("-i", default="temp_charger", help="index")
