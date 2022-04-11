@@ -49,13 +49,6 @@ if args.e =="true":
 	    evtx_security = json.load(f)
 	    print("variable evtx_security")
 
-# convert to strings  for json
-index = str(args.i)
-host = str(args.m)
-machinename = str(args.n)
-domain = str(args.d)
-file = str(args.f)
-
 # counter to add 1 for each entry
 counter=0
 
