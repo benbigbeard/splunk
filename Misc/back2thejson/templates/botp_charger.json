@@ -1,25 +1,25 @@
 {
-    "host":99999999,
-    "index":99999999,
+    "host":"VARIABLE",
+    "index":"VARIABLE",
     "sourcetype":"json_charger",
     "source":"charger_1",
     "event": {
   "value": {
-    "version": 99999999,
-    "reading_time": 99999999,
+    "version": "VARIABLE",
+    "reading_time": "VARIABLE",
     "chargerInformation": {
-      "identifier": 99999999,
+      "identifier": "VARIABLE",
       "type": "EV",
-      "osVersion": 99999999,
-      "hostName": 99999999,
+      "osVersion": "VARIABLE",
+      "hostName": "VARIABLE",
       "domainName": "charger",
       "manufacturerCultureId": 1116,
       "manufacturerGeoId": 244,
       "timeZoneId": "US/Pacific",
       "version": "20.1.1.0",
-      "servicable": 99999999,
-      "domain": 99999999,
-      "readingTime": 99999999,
+      "servicable": "VARIABLE",
+      "domain": "VARIABLE",
+      "readingTime": "VARIABLE",
       "counter": 1
 }
 }

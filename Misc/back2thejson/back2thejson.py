@@ -40,14 +40,22 @@ global counter
 # 1. botp charger
 if args.t =="true":
 	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/botp_charger.json') as f:
-	    json_botp_temp = json.load(f)
-	    print("variable json_botp_temp")
+		json_botp_temp = json.load(f)
+		y = ['test']
+		for obj in json_botp_temp:
+			obj['host'] = obj['host'].replace('99999999', obj['TEST'])
+		json_botp_temp = json.dumps(json_botp_temp)
+		print("variable json_botp_temp: "+json_botp_temp)
+
+
+
+
 
 # 2. EVTX Security
 if args.e =="true":
 	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/evtx_security.json') as f:
-	    evtx_security = json.load(f)
-	    print("variable evtx_security")
+		evtx_security = json.load(f)
+		print("variable evtx_security")
 
 # counter to add 1 for each entry
 counter=0
@@ -98,11 +106,11 @@ def mainScript(iterationnumber):
 
 # main function
 def main(unused_command_line_args):
-    for i in range(1):
-        mainScript(i)
-        # sleep for real time data
-        #time.sleep(60)
-    return 0
+	for i in range(1):
+		mainScript(i)
+		# sleep for real time data
+		#time.sleep(60)
+	return 0
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+	sys.exit(main(sys.argv))
