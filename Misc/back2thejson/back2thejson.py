@@ -47,10 +47,6 @@ if args.t =="true":
 		json_botp_temp = json.dumps(json_botp_temp)
 		print("variable json_botp_temp: "+json_botp_temp)
 
-
-
-
-
 # 2. EVTX Security
 if args.e =="true":
 	with open('/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/evtx_security.json') as f:
