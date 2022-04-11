@@ -1,25 +1,27 @@
-jsonDict = {
-    "host":host,
-    "index":index,
+{
+    "host":99999999,
+    "index":99999999,
     "sourcetype":"json_charger",
     "source":"charger_1",
     "event": {
   "value": {
-    "version": 1,
-    "reading_time": date_time,
+    "version": 99999999,
+    "reading_time": 99999999,
     "chargerInformation": {
-      "identifier": date_time,
+      "identifier": 99999999,
       "type": "EV",
-      "osVersion": OS,
-      "hostName": machinename,
+      "osVersion": 99999999,
+      "hostName": 99999999,
       "domainName": "charger",
       "manufacturerCultureId": 1116,
       "manufacturerGeoId": 244,
       "timeZoneId": "US/Pacific",
       "version": "20.1.1.0",
-      "servicable": status,
-      "domain": domain,
-      "type": "interactive",
-      "readingTime": date_time,
-      "counter": counter
+      "servicable": 99999999,
+      "domain": 99999999,
+      "readingTime": 99999999,
+      "counter": 1
+}
+}
+}
 }
