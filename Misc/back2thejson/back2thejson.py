@@ -17,7 +17,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from argparse import RawTextHelpFormatter
 
 # command line argument config
-parser = argparse.ArgumentParser(description='The following arrguments can be set to true to iniclude the corresponding data: \n\n'+'-b = botp ev charging stationn\n'+'-e = evtx security', formatter_class=RawTextHelpFormatter)
+parser = argparse.ArgumentParser(description='The following arrguments can be set to true to iniclude the corresponding data: \n\n'+'-b = botp EV charging station\n'+'-e = evtx security', formatter_class=RawTextHelpFormatter)
 parser.add_argument("-b", default="false", help="botp event")
 parser.add_argument("-e", default="false", help="evtx security event")
 args = parser.parse_args()
