@@ -1,5 +1,3 @@
-import json
-
 jsonDict = {
     "host":host,
     "index":index,
