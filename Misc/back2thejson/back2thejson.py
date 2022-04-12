@@ -26,8 +26,8 @@ args = parser.parse_args()
 global status
 global counter
 
-#variable for filepath of the template files
-filepath = "/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/"
+# variables
+
 
 # read the json templates
 # 1. botp charger
@@ -40,9 +40,10 @@ if args.b =="true":
 		# define the variable object
 		variables=json_botp_temp['variables']
 		# prints  for testing
-		print(main_body)
-		print("          ")
-		print(variables)
+		#print(main_body)
+		#print("          ")
+		#print(variables)
+		jsonDict=json_botp_temp['main']
 
 # 2. EVTX Security
 if args.e =="true":
@@ -62,10 +63,14 @@ def mainScript(iterationnumber):
 	# add one
 	counter+=1
 
-	# Splunk URL
-	url='http://<URL>:8088/services/collector/event?auto_extract_timestamp=true'
+	# Splunk URL (Cloud)
+	#url='http://'+instance+':8088/services/collector/event?auto_extract_timestamp=true'
+
+	#Splunk URL (on-prem)
+	url = 'https://'+instance+':8088/services/collector/event?auto_exract_timestamp=true'
+
 	# auth header (token)
-	authHeader = {'Authorization': 'Splunk <token>'}
+	authHeader = {'Authorization': 'Splunk '+token}
 
 	# data/time to start filling from
 	year = 2022
@@ -91,11 +96,11 @@ def mainScript(iterationnumber):
 	# weights  for changing the frequency
 	status = str(random.choices(statuslist, weights=(90,10))).strip('[]\'')
 
-"""
+
 	# posting data to splunk
 	r = requests.post(url, headers=authHeader, json=jsonDict, verify=False)
 	print (r.text)
-"""
+
 
 # main function
 def main(unused_command_line_args):

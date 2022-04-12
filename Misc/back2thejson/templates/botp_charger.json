@@ -1,9 +1,9 @@
 {
   "main":[{
-    "host":"VARIABLE",
-    "index":"VARIABLE",
-    "sourcetype":"json_charger",
-    "source":"charger_1",
+    "host":"HOST",
+    "index":"b2thejson",
+    "sourcetype":"json",
+    "source":"SOURCE",
     "event": {
   "value": {
     "version": "VARIABLE",
@@ -20,7 +20,7 @@
       "version": "20.1.1.0",
       "servicable": "VARIABLE",
       "domain": "VARIABLE",
-      "readingTime": "VARIABLE",
+      "readingTime": "2022-04-12 11:11:11",
       "counter": 1
 }
 }
