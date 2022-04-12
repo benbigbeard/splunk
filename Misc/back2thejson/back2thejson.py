@@ -39,10 +39,14 @@ if args.b =="true":
 		main_body=json_botp_temp['main']
 		# define the variable object
 		variables=json_botp_temp['variables']
+		# define the instance variable object
+		instance_variables=json_botp_temp['instance_variables']
 		# prints  for testing
 		print(main_body)
 		print("          ")
 		print(variables)
+		print("          ")
+		print(instance_variables)
 
 # 2. EVTX Security
 if args.e =="true":
