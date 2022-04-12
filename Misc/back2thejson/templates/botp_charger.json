@@ -31,10 +31,5 @@
     "host":"SIMON",
     "second":"second"
  }
-],
-  "instance_variables":[{
-    "index":"some_index",
-    "source":"some_source",
-    "sourcetype":"some_sourcetype"
-  }]
+]
 }
