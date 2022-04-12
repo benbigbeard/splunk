@@ -33,12 +33,12 @@ filepath = "/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/"
 # 1. botp charger
 if args.b =="true":
 	with open(filepath+'botp_charger.json') as f:
-		json_botp_temp = json.loads(f)
-		for obj in json_botp_temp:
-			if obj['host'] in ["99999999"]:
-				obj['host'] = "TEST"
-		json_botp_temp = json.dumps(json_botp_temp)
-		print("variable json_botp_temp: "+json_botp_temp)
+		json_botp_temp = json.load(f)
+		main_body=json_botp_temp['main']
+		variables=json_botp_temp['variables']
+		print(main_body)
+		print("          ")
+		print(variables)
 
 # 2. EVTX Security
 if args.e =="true":

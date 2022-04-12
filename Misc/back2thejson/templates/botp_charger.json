@@ -1,4 +1,5 @@
 {
+  "main":[{
     "host":"VARIABLE",
     "index":"VARIABLE",
     "sourcetype":"json_charger",
@@ -24,4 +25,11 @@
 }
 }
 }
+}
+]
+,
+  "variables":[{
+    "host":"SIMON"
+ }
+]
 }
