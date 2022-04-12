@@ -32,10 +32,14 @@ filepath = "/Users/blovley/Documents/GitHub/splunk/Misc/back2thejson/templates/"
 # read the json templates
 # 1. botp charger
 if args.b =="true":
+	# read in the json template
 	with open(filepath+'botp_charger.json') as f:
 		json_botp_temp = json.load(f)
+		# define the main body object
 		main_body=json_botp_temp['main']
+		# define the variable object
 		variables=json_botp_temp['variables']
+		# prints  for testing
 		print(main_body)
 		print("          ")
 		print(variables)
