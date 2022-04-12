@@ -29,7 +29,8 @@
 ]
 ,
   "variables":[{
-    "host":"SIMON"
+    "host":"SIMON",
+    "second":"second"
  }
 ]
 }
