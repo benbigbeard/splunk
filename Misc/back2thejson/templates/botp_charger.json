@@ -6,6 +6,7 @@
     "source":"SOURCE",
     "event": {
   "value": {
+    "time": "2022-04-12 11:11:11",
     "version": "VARIABLE",
     "reading_time": "VARIABLE",
     "chargerInformation": {
