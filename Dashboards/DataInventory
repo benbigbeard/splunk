@@ -1,0 +1,98 @@
+<dashboard>
+  <label>Data Inventory</label>
+  <row>
+    <panel>
+      <title>Catalog - Indexed Data</title>
+      <table>
+        <title>Select sourcetype to view content</title>
+        <search>
+          <query>| tstats count where index=* by index sourcetype
+| search index!=summary
+| fields index sourcetype
+| sort index</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <set token="sourcetype">$click.value2$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Catalog - Lookups</title>
+      <table>
+        <title>Select lookup to view content</title>
+        <search>
+          <query>| rest/servicesNS/-/-/data/lookup-table-files
+| search title!=geo*
+| fields title
+| table title</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <drilldown>
+          <set token="input">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Drilldown - $sourcetype$</title>
+      <table>
+        <search>
+          <query>index=* sourcetype=$sourcetype$
+| fieldsummary</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Drilldown Lookups - $input$</title>
+      <table>
+        <search>
+          <query>| inputlookup $input$</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>
