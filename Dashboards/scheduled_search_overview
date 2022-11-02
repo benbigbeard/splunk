@@ -1,0 +1,109 @@
+<form version="1.1">
+  <label>Search Schedule Overview</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="view">
+      <label>Field of View</label>
+      <choice value="3600">1 Hour</choice>
+      <choice value="10800">3 Hours</choice>
+      <choice value="21600">6 Hours</choice>
+      <choice value="43200">12 Hours</choice>
+      <default>3600</default>
+      <initialValue>3600</initialValue>
+    </input>
+    <input type="radio" token="type">
+      <label>Include unowned searches</label>
+      <choice value="/services/saved/searches">False</choice>
+      <choice value="/servicesNS/nobody/-/saved/searches">True</choice>
+      <default>/services/saved/searches</default>
+      <initialValue>/services/saved/searches</initialValue>
+    </input>
+    <input type="multiselect" token="searchName">
+      <label>Scheduled Search Name</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>title</fieldForLabel>
+      <fieldForValue>title</fieldForValue>
+      <search>
+        <query>| rest $type$ 
+| where is_scheduled=1</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+      <delimiter> </delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Current Schedule</title>
+      <viz type="timeline_app.timeline">
+        <search>
+          <query>| rest $type$
+```| rest /servicesNS/nobody/-/saved/searches```
+| where is_scheduled=1 
+| search next_scheduled_time=*
+| eval savedsearch_name=title
+| join savedsearch_name [search index=_internal sourcetype=scheduler]
+| rename run_time as duration
+| eval duration = (duration * 1000), title=title.". Estimated time to complete: ".duration." ms"
+| append 
+    [| makeresults count=1 
+    | eval next_scheduled_time=now()+$view$, title="Added line item to show greater future availability - Not a search", duration=1
+    | eval next_scheduled_time=strftime(next_scheduled_time,"%Y-%m-%d %H:%M:%S %Z")]
+| table next_scheduled_time title duration
+| rename title as "Search Name"
+| sort - duration
+| search "Search Name"="$searchName$*"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="timeline_app.timeline.axisTimeFormat">SECONDS</option>
+        <option name="timeline_app.timeline.colorMode">categorical</option>
+        <option name="timeline_app.timeline.maxColor">#DA5C5C</option>
+        <option name="timeline_app.timeline.minColor">#FFE8E8</option>
+        <option name="timeline_app.timeline.numOfBins">3</option>
+        <option name="timeline_app.timeline.tooltipTimeFormat">SUBSECONDS</option>
+        <option name="timeline_app.timeline.useColors">0</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="height">650</option>
+      </viz>
+    </panel>
+  </row>
+  <row depends="$foo$">
+    <panel>
+      <table>
+        <search>
+          <query>| rest /services/apps/local | search disabled=0 label="Event Timeline Viz" 
+| stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <done>
+            <condition match="$result.count$==0">
+              <set token="showSplunkbasePanel">true</set>
+            </condition>
+            <condition match="$result.count$==1">
+              <unset token="showSplunkbasePanel">false</unset>
+            </condition>
+          </done>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$showSplunkbasePanel$">
+      <html>
+        <center>
+          <h1>
+            <a href="https://splunkbase.splunk.com/app/3120" target="blank">Requires this Splunk 'Timeline' viz from Splunkbase</a>
+          </h1>
+        </center>
+      </html>
+    </panel>
+  </row>
+</form>
