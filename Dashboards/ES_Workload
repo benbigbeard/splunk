@@ -1,0 +1,586 @@
+<dashboard version="1.1" theme="light">
+  <label>ES Migration Workload Assessment</label>
+  <description>Use this to baseline ingest, storage, ES workload, search activity, scheduler pressure, users, and host resource demand before migration.</description>
+
+  <fieldset submitButton="true">
+    <input type="time" token="time">
+      <label>Assessment Window</label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="index_filter">
+      <label>Index Filter</label>
+      <default>*</default>
+    </input>
+    <input type="dropdown" token="topn">
+      <label>Top N</label>
+      <choice value="10">10</choice>
+      <choice value="20">20</choice>
+      <choice value="50">50</choice>
+      <default>20</default>
+    </input>
+  </fieldset>
+
+  <row>
+    <panel>
+      <title>Total ingest in assessment window GB</title>
+      <single>
+        <search>
+          <query><![CDATA[
+index=_internal source=*license_usage.log* type=Usage idx=$index_filter$
+| stats sum(b) as bytes
+| eval gb=round(bytes/1024/1024/1024,2)
+| fields gb
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </single>
+    </panel>
+
+    <panel>
+      <title>Average daily ingest GB</title>
+      <single>
+        <search>
+          <query><![CDATA[
+index=_internal source=*license_usage.log* type=Usage idx=$index_filter$
+| bin _time span=1d
+| stats sum(b) as bytes by _time
+| eval gb=bytes/1024/1024/1024
+| stats avg(gb) as avg_daily_gb
+| eval avg_daily_gb=round(avg_daily_gb,2)
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </single>
+    </panel>
+
+    <panel>
+      <title>Peak daily ingest GB</title>
+      <single>
+        <search>
+          <query><![CDATA[
+index=_internal source=*license_usage.log* type=Usage idx=$index_filter$
+| bin _time span=1d
+| stats sum(b) as bytes by _time
+| eval gb=round(bytes/1024/1024/1024,2)
+| stats max(gb) as peak_daily_gb
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </single>
+    </panel>
+
+    <panel>
+      <title>Distinct active search users</title>
+      <single>
+        <search>
+          <query><![CDATA[
+index=_audit action=search info=completed user!="splunk-system-user"
+| stats dc(user) as active_users
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </single>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Daily ingest trend by index</title>
+      <chart>
+        <search>
+          <query><![CDATA[
+index=_internal source=*license_usage.log* type=Usage idx=$index_filter$
+| bin _time span=1d
+| stats sum(b) as bytes by _time idx
+| eval gb=round(bytes/1024/1024/1024,2)
+| timechart span=1d sum(gb) by idx limit=$topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.stackMode">stacked</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Top indexes by ingest GB</title>
+      <table>
+        <search>
+          <query><![CDATA[
+index=_internal source=*license_usage.log* type=Usage idx=$index_filter$
+| stats sum(b) as bytes by idx
+| eval gb=round(bytes/1024/1024/1024,2)
+| sort - gb
+| head $topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+
+    <panel>
+      <title>Top sourcetypes by ingest GB</title>
+      <table>
+        <search>
+          <query><![CDATA[
+index=_internal source=*license_usage.log* type=Usage idx=$index_filter$
+| stats sum(b) as bytes by st
+| eval gb=round(bytes/1024/1024/1024,2)
+| sort - gb
+| head $topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Hourly ingest peaks GB</title>
+      <chart>
+        <search>
+          <query><![CDATA[
+index=_internal source=*license_usage.log* type=Usage idx=$index_filter$
+| bin _time span=1h
+| stats sum(b) as bytes by _time
+| eval gb=round(bytes/1024/1024/1024,2)
+| timechart span=1h max(gb) as hourly_gb
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Current index storage from dbinspect</title>
+      <table>
+        <search>
+          <query><![CDATA[
+| dbinspect index=$index_filter$
+| stats sum(rawSize) as raw_bytes sum(sizeOnDiskMB) as disk_mb min(startEpoch) as oldest max(endEpoch) as newest by index
+| eval raw_gb=round(raw_bytes/1024/1024/1024,2)
+| eval disk_gb=round(disk_mb/1024,2)
+| eval oldest=strftime(oldest,"%Y-%m-%d")
+| eval newest=strftime(newest,"%Y-%m-%d")
+| sort - disk_gb
+          ]]></query>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Search workload by user</title>
+      <table>
+        <search>
+          <query><![CDATA[
+index=_audit action=search info=completed user!="splunk-system-user"
+| stats count as searches avg(total_run_time) as avg_runtime max(total_run_time) as max_runtime by user
+| eval avg_runtime=round(avg_runtime,2), max_runtime=round(max_runtime,2)
+| sort - searches
+| head $topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+
+    <panel>
+      <title>Search workload by app</title>
+      <table>
+        <search>
+          <query><![CDATA[
+index=_audit action=search info=completed
+| stats count as searches dc(user) as users avg(total_run_time) as avg_runtime max(total_run_time) as max_runtime by app
+| eval avg_runtime=round(avg_runtime,2), max_runtime=round(max_runtime,2)
+| sort - searches
+| head $topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Scheduled search health</title>
+      <table>
+        <search>
+          <query><![CDATA[
+index=_internal sourcetype=scheduler
+| stats count as executions 
+        count(eval(status="success")) as success 
+        count(eval(status="skipped")) as skipped 
+        count(eval(status="continued")) as continued 
+        count(eval(status="delegated_remote")) as delegated_remote 
+        by savedsearch_name app user
+| eval skip_rate=round((skipped/executions)*100,2)
+| sort - skipped - executions
+| head $topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Scheduler skips over time</title>
+      <chart>
+        <search>
+          <query><![CDATA[
+index=_internal sourcetype=scheduler status=skipped
+| timechart span=1h count as skipped_searches
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+      </chart>
+    </panel>
+
+    <panel>
+      <title>Long running searches</title>
+      <table>
+        <search>
+          <query><![CDATA[
+index=_audit action=search info=completed total_run_time>60
+| table _time user app search total_run_time total_count result_count
+| eval total_run_time=round(total_run_time,2)
+| sort - total_run_time
+| head $topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>ES correlation searches</title>
+      <table>
+        <search>
+          <query><![CDATA[
+| rest /servicesNS/-/-/saved/searches count=0
+| search eai:acl.app=SplunkEnterpriseSecuritySuite OR action.correlationsearch.enabled=1
+| table title eai:acl.app disabled is_scheduled cron_schedule dispatch.earliest_time dispatch.latest_time action.correlationsearch.enabled
+| sort title
+          ]]></query>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>ES notable events over time</title>
+      <chart>
+        <search>
+          <query><![CDATA[
+index=notable
+| timechart span=1d count as notable_events
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+
+    <panel>
+      <title>Top notable rules</title>
+      <table>
+        <search>
+          <query><![CDATA[
+index=notable
+| stats count as notable_events by search_name urgency severity
+| sort - notable_events
+| head $topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Accelerated data models</title>
+      <table>
+        <search>
+          <query><![CDATA[
+| rest /services/datamodel/acceleration count=0
+| table title eai:acl.app acceleration acceleration.earliest_time acceleration.max_time acceleration.manual_rebuilds acceleration.size_on_disk
+| sort title
+          ]]></query>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Data model acceleration searches in scheduler</title>
+      <table>
+        <search>
+          <query><![CDATA[
+index=_internal sourcetype=scheduler savedsearch_name="*_ACCELERATE_*"
+| stats count as executions count(eval(status="skipped")) as skipped avg(run_time) as avg_runtime max(run_time) as max_runtime by savedsearch_name app
+| eval avg_runtime=round(avg_runtime,2), max_runtime=round(max_runtime,2)
+| sort - executions
+| head $topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>CPU by Splunk role and host</title>
+      <chart>
+        <search>
+          <query><![CDATA[
+index=_introspection sourcetype=splunk_resource_usage component=Hostwide
+| timechart span=15m avg(data.cpu_system_pct) as system_cpu avg(data.cpu_user_pct) as user_cpu by host limit=$topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Memory usage by host</title>
+      <chart>
+        <search>
+          <query><![CDATA[
+index=_introspection sourcetype=splunk_resource_usage component=Hostwide
+| eval mem_used_pct=100-data.mem_free_pct
+| timechart span=15m avg(mem_used_pct) as memory_used_pct by host limit=$topn$
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Indexer queue pressure</title>
+      <chart>
+        <search>
+          <query><![CDATA[
+index=_internal source=*metrics.log group=queue
+| search name IN ("typingqueue","aggqueue","parsingqueue","indexqueue")
+| timechart span=5m avg(current_size) as current_size by name
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Search concurrency indicators</title>
+      <chart>
+        <search>
+          <query><![CDATA[
+index=_internal source=*metrics.log group=search_concurrency
+| timechart span=5m max(active_hist_searches) as active_historical max(active_realtime_searches) as active_realtime max(total_searches) as total_searches
+          ]]></query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <title>Deployment inventory</title>
+      <table>
+        <search>
+          <query><![CDATA[
+| rest /services/server/info count=0 splunk_server=*
+| table splunk_server host server_roles version numberOfCores physicalMemoryMB os_name
+| eval physicalMemoryGB=round(physicalMemoryMB/1024,2)
+| fields splunk_server host server_roles version numberOfCores physicalMemoryGB os_name
+| sort splunk_server
+          ]]></query>
+        </search>
+      </table>
+    </panel>
+  </row>
+  <row>
+  <panel>
+    <title>CDC Search Head CPU utilisation by host</title>
+    <chart>
+      <search>
+        <query><![CDATA[
+index=_introspection sourcetype=splunk_resource_usage component=Hostwide
+| search host="CDC_ES_SH_HOSTNAME_PATTERN*"
+| eval cpu_used_pct=data.cpu_system_pct + data.cpu_user_pct
+| timechart span=5m avg(cpu_used_pct) as avg_cpu max(cpu_used_pct) as peak_cpu by host
+        ]]></query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <option name="charting.chart">line</option>
+    </chart>
+  </panel>
+</row>
+
+<row>
+  <panel>
+    <title>CDC Search Head memory utilisation by host</title>
+    <chart>
+      <search>
+        <query><![CDATA[
+index=_introspection sourcetype=splunk_resource_usage component=Hostwide
+| search host="CDC_ES_SH_HOSTNAME_PATTERN*"
+| eval mem_used_pct=100-data.mem_free_pct
+| timechart span=5m avg(mem_used_pct) as avg_memory max(mem_used_pct) as peak_memory by host
+        ]]></query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <option name="charting.chart">line</option>
+    </chart>
+  </panel>
+</row>
+
+<row>
+  <panel>
+    <title>CDC concurrent searches</title>
+    <chart>
+      <search>
+        <query><![CDATA[
+index=_internal source=*metrics.log group=search_concurrency
+| search host="CDC_ES_SH_HOSTNAME_PATTERN*"
+| timechart span=5m 
+    max(active_hist_searches) as active_historical 
+    max(active_realtime_searches) as active_realtime 
+    max(total_searches) as total_searches 
+    by host
+        ]]></query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <option name="charting.chart">line</option>
+    </chart>
+  </panel>
+</row>
+
+<row>
+  <panel>
+    <title>CDC search volume by hour</title>
+    <chart>
+      <search>
+        <query><![CDATA[
+index=_audit action=search info=completed
+| search host="CDC_ES_SH_HOSTNAME_PATTERN*"
+| timechart span=1h count as completed_searches
+        ]]></query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <option name="charting.chart">column</option>
+    </chart>
+  </panel>
+</row>
+
+<row>
+  <panel>
+    <title>CDC scheduled search pressure</title>
+    <table>
+      <search>
+        <query><![CDATA[
+index=_internal sourcetype=scheduler
+| search host="CDC_ES_SH_HOSTNAME_PATTERN*"
+| stats 
+    count as executions
+    count(eval(status="success")) as success
+    count(eval(status="skipped")) as skipped
+    avg(run_time) as avg_runtime
+    max(run_time) as max_runtime
+    by host app savedsearch_name
+| eval skip_rate=round((skipped/executions)*100,2)
+| eval avg_runtime=round(avg_runtime,2), max_runtime=round(max_runtime,2)
+| sort - skipped - max_runtime
+| head $topn$
+        ]]></query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+    </table>
+  </panel>
+</row>
+
+<row>
+  <panel>
+    <title>CDC peak utilisation summary</title>
+    <table>
+      <search>
+        <query><![CDATA[
+index=_introspection sourcetype=splunk_resource_usage component=Hostwide
+| search host="CDC_ES_SH_HOSTNAME_PATTERN*"
+| eval cpu_used_pct=data.cpu_system_pct + data.cpu_user_pct
+| eval mem_used_pct=100-data.mem_free_pct
+| stats 
+    avg(cpu_used_pct) as avg_cpu
+    max(cpu_used_pct) as peak_cpu
+    perc95(cpu_used_pct) as p95_cpu
+    avg(mem_used_pct) as avg_memory
+    max(mem_used_pct) as peak_memory
+    perc95(mem_used_pct) as p95_memory
+    by host
+| eval avg_cpu=round(avg_cpu,2), peak_cpu=round(peak_cpu,2), p95_cpu=round(p95_cpu,2)
+| eval avg_memory=round(avg_memory,2), peak_memory=round(peak_memory,2), p95_memory=round(p95_memory,2)
+| sort host
+        ]]></query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+    </table>
+  </panel>
+</row>
+
+</dashboard>
